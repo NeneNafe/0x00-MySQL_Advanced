@@ -1,4 +1,4 @@
 // deletes all the documents in the collection school
-db.school.remove({
+db.school.deleteMany({
     name: "Holberton school"
 })

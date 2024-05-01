@@ -30,17 +30,19 @@ class Cache:
         Callable argument named fn"""
         data = self._redis.get(key)
         if fn:
-            try:
-                return fn(data)
-            except Exception as e:
-                print("Error applying conversion function: ".format(e))
-                return data
+            return fn(data)
         return data
 
     def get_str(self, key: str) -> str:
         """parametrizes cache.get with the correct conversion function"""
-        return self.get(key, lambda d: d.decode("utf-8"))
+        variable = self._redis.get(key)
+        return variable.decode("UTF-8")
 
     def get_int(self, key: str) -> int:
         """parametrizes cache.get with the correct conversion function"""
-        return self.get(key, int)
+        variable = self._redis.get(key)
+        try:
+            variable = int(variable.decode("UTF-8"))
+        except Exception:
+            variable = 0
+        return variable

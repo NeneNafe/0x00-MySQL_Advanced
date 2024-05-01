@@ -6,6 +6,22 @@ an instance of the Redis client as a private variable"""
 import redis
 import uuid
 from typing import Union, Callable, Optional
+from functools import wraps
+
+
+def count_calls(method: Callable) -> Callable:
+    """A decorator that takes a single method Callable argument
+     and returns a Callable"""
+    key = method.__qualname__
+
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """ increments the count for that key every time the
+        method is called and returns the value returned by the
+        original method """
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+    return wrapper
 
 
 class Cache:

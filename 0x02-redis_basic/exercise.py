@@ -5,7 +5,7 @@ an instance of the Redis client as a private variable"""
 
 import redis
 import uuid
-from typing import Union
+from typing import Union, Callable, Optional
 
 
 class Cache:
@@ -23,3 +23,24 @@ class Cache:
         key = str(uuid.uuid4())
         self._redis.set(key, data)
         return key
+
+    def get(self, key: str, fn: Optional[Callable] = None)\
+            -> Union[str, bytes, int, float]:
+        """take a key string argument and an optional
+        Callable argument named fn"""
+        data = self._redis.get(key)
+        if fn:
+            try:
+                return fn(data)
+            except Exception as e:
+                print("Error applying conversion function: ".format(e))
+                return data
+        return data
+
+    def get_str(self, key: str) -> str:
+        """parametrizes cache.get with the correct conversion function"""
+        return self.get(key, lambda d: d.decode("utf-8"))
+
+    def get_int(self, key: str) -> int:
+        """parametrizes cache.get with the correct conversion function"""
+        return self.get(key, int)

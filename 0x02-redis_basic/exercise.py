@@ -34,6 +34,7 @@ class Cache:
         """flushes the redis database"""
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """stores the input data in Redis using randomly"""
         key = str(uuid.uuid4())
